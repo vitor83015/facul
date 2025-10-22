@@ -25,30 +25,34 @@
 }
 
 body {
-    /* Aplica o fundo escuro com gradiente e centraliza o conteúdo */
+    /* Fundo escuro com gradiente */
     background: radial-gradient(circle at center, var(--bg-color-light) 0%, var(--bg-color-dark) 100%);
     color: var(--text-color);
     min-height: 100vh;
+
+    /* Centraliza o conteúdo no meio da tela */
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Alinha o conteúdo ao topo para páginas internas */
-    padding: 40px; 
+    align-items: center;
+
+    /* Remove padding que deslocava o centro */
+    padding: 0; 
 }
 
 /* Força o container principal da HOME a centralizar no eixo Y */
 .main-content {
-    width: 90%;
+    width: 50%;
     max-width: 800px; 
-    padding: 0; /* O padding de 40px está no body */
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Ajusta para que o .main-content fique no centro visual da tela */
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-}
+    text-align: center; /* centraliza textos */
 
+    /* Remove o posicionamento absoluto que tirava do fluxo */
+    position: static;
+    top: auto;
+    transform: none;
+}
 /* ==================================== */
 /* 2. ESTILOS DA PÁGINA HOME (2X2 GRID) */
 /* ==================================== */
