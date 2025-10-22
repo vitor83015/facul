@@ -1,5 +1,5 @@
 // frontend/src/api/ClientApi.js
-const API_URL = 'http://localhost:5000';
+const API_URL = "https://small-beds-pump.loca.lt";
 
 // ===== Função auxiliar para pegar headers com token =====
 function getAuthHeaders() {
