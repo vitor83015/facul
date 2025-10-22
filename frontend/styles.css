@@ -25,18 +25,14 @@
 }
 
 body {
-    /* Fundo escuro com gradiente */
+    /* Aplica o fundo escuro com gradiente e centraliza o conteúdo */
     background: radial-gradient(circle at center, var(--bg-color-light) 0%, var(--bg-color-dark) 100%);
     color: var(--text-color);
     min-height: 100vh;
-
-    /* Centraliza o conteúdo no meio da tela */
     display: flex;
     justify-content: center;
-    align-items: center;
-
-    /* Remove padding que deslocava o centro */
-    padding: 0; 
+    align-items: flex-start; /* Alinha o conteúdo ao topo para páginas internas */
+    padding: 40px; 
 }
 
 /* Força o container principal da HOME a centralizar no eixo Y */
@@ -53,6 +49,7 @@ body {
     top: auto;
     transform: none;
 }
+
 /* ==================================== */
 /* 2. ESTILOS DA PÁGINA HOME (2X2 GRID) */
 /* ==================================== */

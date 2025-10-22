@@ -63,7 +63,6 @@ export async function renderListaClientes() {
           <span class="client-info"><i class="fas fa-envelope"></i> ${client.email}</span>
         </div>
         <div class="delivery-actions">
-          <button class="edit-btn" data-id="${client.id}">Editar</button>
           <button class="delete-btn" data-id="${client.id}">Deletar</button>
         </div>
       `;
