@@ -1,0 +1,73 @@
+// prisma/schema.prisma
+
+// 1️⃣ Datasource: onde o Prisma vai salvar os dados
+datasource db {
+  provider = "sqlite" // ou "postgresql", "mysql", etc
+  url      = "file:./dev.db" // caminho do arquivo SQLite
+}
+
+// 2️⃣ Gerador: cria o client do Prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 3️⃣ Modelos
+model User {
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String     @unique
+  cpf       String?    @unique
+  phone     String?
+  address   String?
+  city      String?
+  state     String?
+  role      String // "ADMIN" ou "CLIENT"
+  password String @default("123456") // <-- default temporário
+  medicines Medicine[] @relation("UserMedicines") // <- relação inversa
+}
+
+model Medicine {
+  id           Int      @id @default(autoincrement())
+  name         String
+  active       String // 👈 Adicione este campo
+  dosage       String?
+  manufacturer String?
+  batch        String?
+  expiration   String?
+  stock        Int
+  notes        String?
+  createdBy    Int
+  user         User     @relation(fields: [createdBy], references: [id], name: "UserMedicines")
+  createdAt    DateTime @default(now())
+}
+
+model Medication {
+  id         Int        @id @default(autoincrement())
+  name       String
+  dosage     String
+  deliveries Delivery[]
+}
+
+model Client {
+  id         Int        @id @default(autoincrement())
+  name       String
+  cpf        String
+  address    String
+  phone      String
+  email      String
+  deliveries Delivery[]
+}
+
+
+model Delivery {
+  id            Int        @id @default(autoincrement())
+  client        Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId      Int
+  medication    Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  medicationId  Int
+  quantity      Int
+  date          DateTime
+  time          String
+  address       String
+  notes         String?
+}

@@ -1,0 +1,475 @@
+/* ==================================== */
+/* 1. VARIÁVEIS E CONFIGURAÇÕES GLOBAIS */
+/* ==================================== */
+:root {
+    /* Cores ajustadas para o tom de azul escuro do fundo */
+    --bg-color-dark: #1e2430; 
+    --bg-color-light: #2c3440;
+    --card-bg-color: #2b3a4a; /* Fundo dos cards e formulários */
+    --text-color: #ffffff; /* Cor principal do texto */
+    --primary-color: #4a90e2; /* Azul de destaque (ícones e botões) */
+    --hover-card-bg: #354559; /* Cor sutil de hover do card */
+    --logout-bg: #4a90e2; /* Fundo do botão Sair */
+    --form-bg-color: #2b3a4a; /* Fundo do formulário/módulo */
+    --input-bg-color: #242c38; /* Fundo dos campos de input */
+    
+    --border-radius: 8px;
+    --transition-speed: 0.2s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    /* Aplica o fundo escuro com gradiente e centraliza o conteúdo */
+    background: radial-gradient(circle at center, var(--bg-color-light) 0%, var(--bg-color-dark) 100%);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Alinha o conteúdo ao topo para páginas internas */
+    padding: 40px; 
+}
+
+/* Força o container principal da HOME a centralizar no eixo Y */
+.main-content {
+    width: 90%;
+    max-width: 800px; 
+    padding: 0; /* O padding de 40px está no body */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Ajusta para que o .main-content fique no centro visual da tela */
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* ==================================== */
+/* 2. ESTILOS DA PÁGINA HOME (2X2 GRID) */
+/* ==================================== */
+
+/* 2.1. Cabeçalho da Home */
+.header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.header-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.system-title {
+    font-size: 2.2rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.system-subtitle {
+    font-size: 1rem;
+    color: #a0a0a0;
+}
+
+/* 2.2. Grade dos Cards de Ação (2x2) */
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 20px;
+    width: 100%; 
+    margin-bottom: 50px;
+}
+
+/* 2.3. Cards de Ação e Efeito Hover */
+.action-card {
+    background-color: var(--card-bg-color);
+    border-radius: var(--border-radius);
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: var(--text-color);
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+}
+
+.action-card:hover {
+    background-color: var(--hover-card-bg);
+    transform: translateY(-3px);
+}
+
+.card-icon {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    padding: 10px; 
+    border-radius: 5px;
+    background-color: rgba(74, 144, 226, 0.15); 
+    margin-bottom: 15px;
+    width: fit-content; 
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.card-description {
+    font-size: 0.85rem;
+    color: #b0b0b0;
+}
+
+/* 2.4. Ações de Rodapé (Layout e Largura) */
+.footer-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; 
+    padding: 10px 0;
+}
+
+/* Botão Configurações (Estilo de Link) */
+.config-button {
+    background: none;
+    border: none;
+    color: #a0a0a0;
+    font-size: 0.95rem;
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: var(--border-radius);
+    transition: color var(--transition-speed);
+    margin-left: 0; 
+}
+
+.config-button:hover {
+    color: var(--primary-color);
+}
+
+.config-button i {
+    margin-right: 8px;
+}
+
+/* Botão Sair (Largura e Estilo de Destaque) */
+.logout-button {
+    width: 120px; 
+    background-color: var(--logout-bg);
+    border: none;
+    color: var(--text-color);
+    padding: 10px 0;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    transition: background-color var(--transition-speed);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 0; 
+}
+
+.logout-button:hover {
+    background-color: #3e7fd9;
+}
+
+.logout-button i {
+    margin-right: 8px;
+}
+
+/* ======================================= */
+/* 3. ESTILOS DE TELAS INTERNAS (FORMULÁRIOS) */
+/* ======================================= */
+
+/* Container Principal para centralizar formulários */
+.page-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* 3.1. Cabeçalho das Páginas Internas */
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.page-header a {
+    color: #a0a0a0;
+    font-size: 1.5rem;
+    text-decoration: none;
+    transition: color var(--transition-speed);
+}
+
+.page-header a:hover {
+    color: var(--primary-color);
+}
+
+.page-header-icon {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+}
+
+.page-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.page-subtitle {
+    font-size: 0.9rem;
+    color: #b0b0b0;
+    margin-left: 5px;
+}
+
+/* 3.2. Estrutura do Formulário */
+.form-card {
+    background-color: var(--form-bg-color);
+    border-radius: var(--border-radius);
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.form-grid {
+    display: grid;
+    /* Layout responsivo de 2 colunas para campos */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 20px 25px;
+}
+
+/* 3.3. Campos de Input (Textos, Datas, Selects) */
+.form-group label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #b0b0b0;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--input-bg-color);
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+}
+
+/* Estilo de foco e campos de texto longos */
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* 3.4. Ações do Formulário (Botões) */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.primary-button {
+    /* Gradiente para o botão principal (Salvar/Registrar) */
+    background: linear-gradient(to right, #007bff, var(--primary-color));
+    color: var(--text-color);
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity var(--transition-speed);
+}
+
+.primary-button:hover {
+    opacity: 0.9;
+}
+
+.secondary-button {
+    /* Botão Cancelar (Tema escuro) */
+    background-color: transparent;
+    color: #b0b0b0;
+    border: 1px solid #404b5a;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+.secondary-button:hover {
+    background-color: #354559;
+}
+
+
+/* ================================== */
+/* 4. ESTILOS DA TELA LISTAR ENTREGAS */
+/* ================================== */
+
+.search-bar {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--input-bg-color);
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: var(--text-color);
+    font-size: 1rem;
+    margin-bottom: 25px;
+    outline: none;
+}
+
+.search-bar:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+.delivery-item {
+    background-color: var(--card-bg-color);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin-bottom: 15px;
+    /* Divide o conteúdo em 3 colunas para Cliente/Medicamento | Data/Hora | Status */
+    grid-template-columns: 2fr 1fr 1fr;
+    display: grid; 
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.delivery-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.client-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.client-info, .med-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: #b0b0b0;
+}
+
+.med-info .fa-capsules, .client-info .fa-map-marker-alt, .client-info .fa-calendar-alt, .client-info .fa-clock {
+    color: var(--primary-color);
+}
+
+.delivery-status {
+    text-align: right;
+}
+
+.status-tag {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-block;
+    min-width: 80px;
+    text-align: center;
+}
+
+.status-entregue {
+    background-color: #1a5e37; /* Verde escuro */
+    color: #fff;
+}
+
+.status-pendente {
+    background-color: #8f722a; /* Amarelo/Ouro escuro */
+    color: #1e2430;
+}
+
+.total-entregas {
+    margin-top: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #b0b0b0;
+    text-align: right;
+    padding-right: 10px;
+}
+
+/* ============================ */
+/* 5. RESPONSIVIDADE ADICIONAL  */
+/* ============================ */
+
+@media (max-width: 600px) {
+    /* Home Page */
+    body {
+        padding: 20px;
+    }
+    .main-content {
+        width: 100%;
+        max-width: 100%;
+        position: static;
+        transform: none;
+    }
+    .grid-container {
+        grid-template-columns: 1fr; /* Coluna única em telas pequenas */
+    }
+    .footer-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        /* Alinha botões ao centro no mobile */
+        justify-content: center; 
+    }
+    .logout-button {
+        width: 100%; 
+        max-width: 300px;
+    }
+
+    /* Formulários */
+    .form-grid {
+        /* Permite que o 'auto-fit' se ajuste ao máximo, mas a grid ainda funciona */
+        grid-template-columns: 1fr;
+    }
+    .form-group:nth-child(even),
+    .form-group:nth-child(odd),
+    .form-group:last-child {
+        grid-column: 1 / -1;
+    }
+    .form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+    .primary-button, .secondary-button {
+        width: 100%;
+    }
+
+    /* Listar Entregas */
+    .delivery-item {
+        /* Muda para empilhar informações no mobile */
+        grid-template-columns: 1fr; 
+        gap: 15px;
+    }
+    .delivery-info:nth-child(2) {
+        flex-direction: row; /* Data e hora lado a lado */
+        justify-content: space-between;
+    }
+    .delivery-status {
+        text-align: left;
+    }
+}
