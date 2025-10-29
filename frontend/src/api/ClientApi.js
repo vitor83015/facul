@@ -1,6 +1,5 @@
 // frontend/src/api/ClientApi.js
-const API_URL = "your url is: https://dirty-webs-count.loca.lt";
-
+const API_URL = "http://localhost:5000"; // endereço do backend
 // ===== Função auxiliar para pegar headers com token =====
 function getAuthHeaders() {
   const token = localStorage.getItem("token");
