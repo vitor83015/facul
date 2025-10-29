@@ -3,103 +3,99 @@
 // Importa o CSS Home
 
 export function renderHomePage() {
-  const app = document.getElementById('app');
+  const app = document.getElementById("app");
   if (!app) {
-    console.error('Elemento #app não encontrado. Certifique-se de que index.html tem <div id="app"></div>');
+    console.error('Elemento #app não encontrado.');
     return;
   }
 
- app.innerHTML = `
-  <div class="container py-5">
-    <header class="text-center mb-5">
-      <i class="fas fa-box-open fa-3x text-primary mb-3"></i>
-      <h1 class="fw-bold">Sistema de Entregas</h1>
-      <p class="text-muted">Gerencie as entregas de medicamentos da sua farmácia</p>
-    </header>
+  app.innerHTML = `
+    <main class="container py-5 text-center">
+      <header class="mb-5">
+        <h1 class="display-5 fw-bold">Sistema de Entregas</h1>
+        <p class="text-muted">Gerencie as entregas de medicamentos da sua farmácia</p>
+      </header>
 
-    <div class="row g-4">
-      <div class="col-md-6 col-lg-3">
-        <div class="card h-100 shadow-sm action-card" data-action="cadastro-clientes">
-          <div class="card-body text-center">
-            <i class="fas fa-user-friends fa-2x text-primary mb-3"></i>
-            <h5 class="card-title">Cadastro de Clientes</h5>
-            <p class="card-text text-muted">Cadastre e gerencie os clientes da farmácia.</p>
-          </div>
+      <div class="row justify-content-center g-4">
+        <div class="col-md-5 col-lg-4">
+          <a href="#" class="card h-100 text-decoration-none action-card" data-action="cadastro-clientes">
+            <div class="card-body">
+              <i class="fas fa-user-friends fa-2x mb-3 text-primary"></i>
+              <h5 class="card-title">Cadastro de Clientes</h5>
+              <p class="card-text">Cadastre e gerencie os clientes da farmácia</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="col-md-5 col-lg-4">
+          <a href="#" class="card h-100 text-decoration-none action-card" data-action="cadastro-medicamentos">
+            <div class="card-body">
+              <i class="fas fa-pills fa-2x mb-3 text-success"></i>
+              <h5 class="card-title">Cadastro de Medicamentos</h5>
+              <p class="card-text">Cadastre e gerencie os medicamentos</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="col-md-5 col-lg-4">
+          <a href="#" class="card h-100 text-decoration-none action-card" data-action="registrar-entrega">
+            <div class="card-body">
+              <i class="fas fa-box-open fa-2x mb-3 text-warning"></i>
+              <h5 class="card-title">Registrar Entrega</h5>
+              <p class="card-text">Registre uma nova entrega de medicamentos</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="col-md-5 col-lg-4">
+          <a href="#" class="card h-100 text-decoration-none action-card" data-action="listas-hub">
+            <div class="card-body">
+              <i class="fas fa-folder-open fa-2x mb-3 text-info"></i>
+              <h5 class="card-title">Listas</h5>
+              <p class="card-text">Visualize clientes, medicamentos e entregas</p>
+            </div>
+          </a>
         </div>
       </div>
 
-      <div class="col-md-6 col-lg-3">
-        <div class="card h-100 shadow-sm action-card" data-action="cadastro-medicamentos">
-          <div class="card-body text-center">
-            <i class="fas fa-pills fa-2x text-success mb-3"></i>
-            <h5 class="card-title">Cadastro de Medicamentos</h5>
-            <p class="card-text text-muted">Cadastre e gerencie os medicamentos.</p>
-          </div>
-        </div>
-      </div>
+      <footer class="mt-5">
+        <button class="btn btn-outline-secondary me-2 config-button" data-action="configuracoes">
+          <i class="fas fa-cog"></i> Configurações
+        </button>
+        <button class="btn btn-danger logout-button" data-action="sair">
+          <i class="fas fa-sign-out-alt"></i> Sair
+        </button>
+      </footer>
+    </main>
+  `;
 
-      <div class="col-md-6 col-lg-3">
-        <div class="card h-100 shadow-sm action-card" data-action="registrar-entrega">
-          <div class="card-body text-center">
-            <i class="fas fa-truck fa-2x text-warning mb-3"></i>
-            <h5 class="card-title">Registrar Entrega</h5>
-            <p class="card-text text-muted">Registre uma nova entrega de medicamentos.</p>
-          </div>
-        </div>
-      </div>
+  // === Reativar eventos ===
 
-      <div class="col-md-6 col-lg-3">
-        <div class="card h-100 shadow-sm action-card" data-action="listas-hub">
-          <div class="card-body text-center">
-            <i class="fas fa-folder-open fa-2x text-info mb-3"></i>
-            <h5 class="card-title">Listas</h5>
-            <p class="card-text text-muted">Visualize clientes, medicamentos e entregas.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="d-flex justify-content-between align-items-center mt-5">
-      <button class="btn btn-outline-secondary config-button">
-        <i class="fas fa-cog"></i> Configurações
-      </button>
-      <button class="btn btn-danger logout-button">
-        <i class="fas fa-sign-out-alt"></i> Sair
-      </button>
-    </div>
-  </div>
-`;
-  // === Interações ===
-
-  // Cards de ação
+  // 1️⃣ - Cards de ação (navegação)
   const actionCards = app.querySelectorAll('.action-card');
   actionCards.forEach(card => {
     card.addEventListener('click', (e) => {
-      e.preventDefault(); // evita que a âncora recarregue a página
+      e.preventDefault();
       const action = card.getAttribute('data-action');
       if (action) {
-        const event = new CustomEvent('navigate', { detail: action });
-        window.dispatchEvent(event);
+        window.dispatchEvent(new CustomEvent('navigate', { detail: action }));
       }
     });
   });
 
-  // Botão de logout
+  // 2️⃣ - Botão de logout
   const logoutButton = app.querySelector('.logout-button');
   if (logoutButton) {
     logoutButton.addEventListener('click', () => {
-      // Navega de volta para a página de login
-      const event = new CustomEvent('navigate', { detail: 'login' });
-      window.dispatchEvent(event);
+      window.dispatchEvent(new CustomEvent('navigate', { detail: 'login' }));
     });
   }
 
-  // Botão de configurações
+  // 3️⃣ - Botão de configurações (ainda placeholder)
   const configButton = app.querySelector('.config-button');
   if (configButton) {
     configButton.addEventListener('click', () => {
-      console.log('Abrindo Configurações...');
-      // Futuramente: abrir modal ou página de configurações
+      alert('Função de configurações em desenvolvimento.');
     });
   }
 }

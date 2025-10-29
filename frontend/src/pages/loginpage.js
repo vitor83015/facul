@@ -6,127 +6,122 @@ export function renderLoginPage() {
   localStorage.removeItem("token");
 
   app.innerHTML = `
-    <div class="min-vh-100 d-flex align-items-center justify-content-center bg-dark text-light">
-      <div class="card bg-secondary text-light shadow p-4" style="max-width: 420px; width: 100%;">
-        <div class="card-body">
-          <h3 class="text-center mb-4 fw-bold" id="formTitle">Fazer Login</h3>
+    <div class="container py-5 d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+      <div class="card shadow-lg p-4" style="max-width: 400px; width: 100%;">
+        <ul class="nav nav-tabs mb-3" id="loginTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab">
+              Login
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="cadastro-tab" data-bs-toggle="tab" data-bs-target="#cadastro" type="button" role="tab">
+              Cadastro
+            </button>
+          </li>
+        </ul>
 
-          <!-- Formulário de Login -->
-          <form id="loginForm">
-            <div class="mb-3">
-              <label for="loginEmail" class="form-label">E-mail</label>
-              <input type="email" id="loginEmail" class="form-control bg-dark text-light border-0" placeholder="Digite seu e-mail" required>
-            </div>
-            <div class="mb-3">
-              <label for="loginPassword" class="form-label">Senha</label>
-              <input type="password" id="loginPassword" class="form-control bg-dark text-light border-0" placeholder="Digite sua senha" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100 mb-3 fw-bold">Entrar</button>
-            <p class="text-center">
-              Não tem uma conta?
-              <a href="#" id="switchToCadastro" class="link-light text-decoration-none">Cadastre-se</a>
-            </p>
-          </form>
+        <div class="tab-content" id="loginTabsContent">
+          <!-- Aba de Login -->
+          <div class="tab-pane fade show active" id="login" role="tabpanel">
+            <form id="loginForm">
+              <div class="mb-3">
+                <label class="form-label">E-mail ou Usuário</label>
+                <input type="text" id="loginEmail" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Senha</label>
+                <input type="password" id="loginPassword" class="form-control" required>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Entrar</button>
+            </form>
+          </div>
 
-          <!-- Formulário de Cadastro -->
-          <form id="cadastroForm" class="d-none">
-            <div class="mb-3">
-              <label for="cadastroNome" class="form-label">Nome</label>
-              <input type="text" id="cadastroNome" class="form-control bg-dark text-light border-0" placeholder="Seu nome completo" required>
-            </div>
-            <div class="mb-3">
-              <label for="cadastroEmail" class="form-label">E-mail</label>
-              <input type="email" id="cadastroEmail" class="form-control bg-dark text-light border-0" placeholder="Digite seu e-mail" required>
-            </div>
-            <div class="mb-3">
-              <label for="cadastroPassword" class="form-label">Senha</label>
-              <input type="password" id="cadastroPassword" class="form-control bg-dark text-light border-0" placeholder="Crie uma senha" required>
-            </div>
-            <div class="mb-3">
-              <label for="cadastroConfirmPassword" class="form-label">Confirmar senha</label>
-              <input type="password" id="cadastroConfirmPassword" class="form-control bg-dark text-light border-0" placeholder="Repita a senha" required>
-            </div>
-            <button type="submit" class="btn btn-success w-100 mb-3 fw-bold">Cadastrar</button>
-            <p class="text-center">
-              Já tem conta?
-              <a href="#" id="switchToLogin" class="link-light text-decoration-none">Fazer login</a>
-            </p>
-          </form>
+          <!-- Aba de Cadastro -->
+          <div class="tab-pane fade" id="cadastro" role="tabpanel">
+            <form id="cadastroForm">
+              <div class="mb-3">
+                <label class="form-label">Nome</label>
+                <input type="text" id="cadastroNome" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">E-mail</label>
+                <input type="email" id="cadastroEmail" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Senha</label>
+                <input type="password" id="cadastroPassword" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Confirmar Senha</label>
+                <input type="password" id="cadastroConfirmPassword" class="form-control" required>
+              </div>
+              <button type="submit" class="btn btn-success w-100">Cadastrar</button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
   `;
 
-  const loginForm = app.querySelector("#loginForm");
-  const cadastroForm = app.querySelector("#cadastroForm");
-  const formTitle = app.querySelector("#formTitle");
+  // === Ações ===
+  const BASE_URL = "http://localhost:5000";
 
-  // Alternar entre Login e Cadastro
-  app.querySelector("#switchToCadastro").addEventListener("click", (e) => {
-    e.preventDefault();
-    loginForm.classList.add("d-none");
-    cadastroForm.classList.remove("d-none");
-    formTitle.textContent = "Criar Conta";
-  });
+  // Login
+  const loginForm = document.getElementById("loginForm");
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
 
-  app.querySelector("#switchToLogin").addEventListener("click", (e) => {
-    e.preventDefault();
-    cadastroForm.classList.add("d-none");
-    loginForm.classList.remove("d-none");
-    formTitle.textContent = "Fazer Login";
-  });
+      try {
+        const res = await fetch(`${BASE_URL}/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+        if (!res.ok) throw new Error("Credenciais inválidas");
 
-  // ===== Login =====
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = app.querySelector("#loginEmail").value;
-    const password = app.querySelector("#loginPassword").value;
+        const data = await res.json();
+        localStorage.setItem("token", data.token);
+        alert(`Bem-vindo, ${data.name}!`);
+        window.dispatchEvent(new CustomEvent("navigate", { detail: "home" }));
+      } catch (err) {
+        alert("Falha ao logar: usuário não cadastrado ou senha incorreta.");
+      }
+    });
+  }
 
-    try {
-      const response = await fetch(`${BASE_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+  // Cadastro
+  const cadastroForm = document.getElementById("cadastroForm");
+  if (cadastroForm) {
+    cadastroForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("cadastroNome").value;
+      const email = document.getElementById("cadastroEmail").value;
+      const password = document.getElementById("cadastroPassword").value;
+      const confirmPassword = document.getElementById("cadastroConfirmPassword").value;
 
-      if (!response.ok) throw new Error("Credenciais inválidas");
+      if (password !== confirmPassword) {
+        return alert("As senhas não coincidem!");
+      }
 
-      const data = await response.json();
-      localStorage.setItem("token", data.token);
-      alert(`Bem-vindo, ${data.name}!`);
-      window.dispatchEvent(new CustomEvent("navigate", { detail: "home" }));
-    } catch (err) {
-      alert("Erro ao fazer login: " + err.message);
-    }
-  });
+      try {
+        const res = await fetch(`${BASE_URL}/auth/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password }),
+        });
+        if (!res.ok) throw new Error("Falha ao cadastrar");
 
-  // ===== Cadastro =====
-  cadastroForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const name = app.querySelector("#cadastroNome").value;
-    const email = app.querySelector("#cadastroEmail").value;
-    const password = app.querySelector("#cadastroPassword").value;
-    const confirmPassword = app.querySelector("#cadastroConfirmPassword").value;
-
-    if (password !== confirmPassword) {
-      return alert("As senhas não coincidem!");
-    }
-
-    try {
-      const response = await fetch(`${BASE_URL}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      if (!response.ok) throw new Error("Erro ao cadastrar");
-
-      const data = await response.json();
-      localStorage.setItem("token", data.token);
-      alert(`Conta criada com sucesso! Bem-vindo, ${data.name}`);
-      window.dispatchEvent(new CustomEvent("navigate", { detail: "home" }));
-    } catch (err) {
-      alert("Falha ao cadastrar: " + err.message);
-    }
-  });
+        const data = await res.json();
+        localStorage.setItem("token", data.token);
+        alert(`Conta criada com sucesso! Bem-vindo, ${data.name}`);
+        window.dispatchEvent(new CustomEvent("navigate", { detail: "home" }));
+      } catch (err) {
+        alert("Falha ao cadastrar: email já existente ou outro erro.");
+      }
+    });
+  }
 }
