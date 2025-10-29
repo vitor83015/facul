@@ -1,7 +1,5 @@
 // frontend/src/pages/HomePage.js
 
-// Importa o CSS Home
-
 export function renderHomePage() {
   const app = document.getElementById("app");
   if (!app) {
@@ -58,6 +56,11 @@ export function renderHomePage() {
         </div>
       </div>
 
+      <!-- AQUI É O CONTAINER CENTRALIZADO PARA O CONTEÚDO -->
+      <div id="page-container" class="d-flex justify-content-center align-items-center mt-5">
+        <div id="page-content" class="w-100" style="max-width: 700px;"></div>
+      </div>
+
       <footer class="mt-5">
         <button class="btn btn-outline-secondary me-2 config-button" data-action="configuracoes">
           <i class="fas fa-cog"></i> Configurações
@@ -71,14 +74,46 @@ export function renderHomePage() {
 
   // === Reativar eventos ===
 
+  const pageContent = document.getElementById("page-content");
+
+  // Função genérica pra renderizar conteúdo centralizado
+  function renderSection(title, text, color) {
+    pageContent.innerHTML = `
+      <div class="card shadow-sm text-center border-${color}">
+        <div class="card-body">
+          <h4 class="text-${color} mb-3">${title}</h4>
+          <p>${text}</p>
+          <button class="btn btn-outline-${color} mt-3" id="btn-voltar">Voltar</button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("btn-voltar").addEventListener("click", () => {
+      pageContent.innerHTML = "";
+    });
+  }
+
   // 1️⃣ - Cards de ação (navegação)
   const actionCards = app.querySelectorAll('.action-card');
   actionCards.forEach(card => {
     card.addEventListener('click', (e) => {
       e.preventDefault();
       const action = card.getAttribute('data-action');
-      if (action) {
-        window.dispatchEvent(new CustomEvent('navigate', { detail: action }));
+      if (!action) return;
+
+      switch (action) {
+        case 'cadastro-clientes':
+          renderSection('Cadastro de Clientes', 'Formulário de clientes aparecerá aqui.', 'primary');
+          break;
+        case 'cadastro-medicamentos':
+          renderSection('Cadastro de Medicamentos', 'Formulário de medicamentos aparecerá aqui.', 'success');
+          break;
+        case 'registrar-entrega':
+          renderSection('Registrar Entrega', 'Formulário de entrega aparecerá aqui.', 'warning');
+          break;
+        case 'listas-hub':
+          renderSection('Listas', 'Listas de clientes, medicamentos e entregas aparecerão aqui.', 'info');
+          break;
       }
     });
   });
@@ -91,7 +126,7 @@ export function renderHomePage() {
     });
   }
 
-  // 3️⃣ - Botão de configurações (ainda placeholder)
+  // 3️⃣ - Botão de configurações (placeholder)
   const configButton = app.querySelector('.config-button');
   if (configButton) {
     configButton.addEventListener('click', () => {
