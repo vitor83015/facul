@@ -1,7 +1,6 @@
 // frontend/src/pages/HomePage.js
 
 // Importa o CSS Home
-import '../../styles.css'; // CSS exclusivo da homepage
 
 export function renderHomePage() {
   const app = document.getElementById('app');
@@ -10,59 +9,66 @@ export function renderHomePage() {
     return;
   }
 
-  app.innerHTML = `
-    <main class="main-content">
-      <header class="header">
-        <i class="fas fa-link header-icon"></i>
-        <h1 class="system-title">Sistema de Entregas</h1>
-        <p class="system-subtitle">Gerencie as entregas de medicamentos da sua farmácia</p>
-      </header>
+ app.innerHTML = `
+  <div class="container py-5">
+    <header class="text-center mb-5">
+      <i class="fas fa-box-open fa-3x text-primary mb-3"></i>
+      <h1 class="fw-bold">Sistema de Entregas</h1>
+      <p class="text-muted">Gerencie as entregas de medicamentos da sua farmácia</p>
+    </header>
 
-      <section class="grid-container">
-        <a href="#" class="action-card" data-action="cadastro-clientes">
-          <i class="fas fa-user-friends card-icon"></i>
-          <div class="card-content">
-            <h2 class="card-title">Cadastro de Clientes</h2>
-            <p class="card-description">Cadastre e gerencie os clientes da farmácia</p>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 shadow-sm action-card" data-action="cadastro-clientes">
+          <div class="card-body text-center">
+            <i class="fas fa-user-friends fa-2x text-primary mb-3"></i>
+            <h5 class="card-title">Cadastro de Clientes</h5>
+            <p class="card-text text-muted">Cadastre e gerencie os clientes da farmácia.</p>
           </div>
-        </a>
+        </div>
+      </div>
 
-        <a href="#" class="action-card" data-action="cadastro-medicamentos">
-          <i class="fas fa-link card-icon"></i>
-          <div class="card-content">
-            <h2 class="card-title">Cadastro de Medicamentos</h2>
-            <p class="card-description">Cadastre e gerencie os medicamentos</p>
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 shadow-sm action-card" data-action="cadastro-medicamentos">
+          <div class="card-body text-center">
+            <i class="fas fa-pills fa-2x text-success mb-3"></i>
+            <h5 class="card-title">Cadastro de Medicamentos</h5>
+            <p class="card-text text-muted">Cadastre e gerencie os medicamentos.</p>
           </div>
-        </a>
+        </div>
+      </div>
 
-        <a href="#" class="action-card" data-action="registrar-entrega">
-          <i class="fas fa-box-open card-icon"></i>
-          <div class="card-content">
-            <h2 class="card-title">Registrar Entrega</h2>
-            <p class="card-description">Registre uma nova entrega de medicamentos</p>
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 shadow-sm action-card" data-action="registrar-entrega">
+          <div class="card-body text-center">
+            <i class="fas fa-truck fa-2x text-warning mb-3"></i>
+            <h5 class="card-title">Registrar Entrega</h5>
+            <p class="card-text text-muted">Registre uma nova entrega de medicamentos.</p>
           </div>
-        </a>
+        </div>
+      </div>
 
-        <a href="#" class="action-card" data-action="listas-hub">
-          <i class="fas fa-folder-open card-icon"></i>
-          <div class="card-content">
-            <h2 class="card-title">Listas</h2>
-            <p class="card-description">Visualize clientes, medicamentos e entregas</p>
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 shadow-sm action-card" data-action="listas-hub">
+          <div class="card-body text-center">
+            <i class="fas fa-folder-open fa-2x text-info mb-3"></i>
+            <h5 class="card-title">Listas</h5>
+            <p class="card-text text-muted">Visualize clientes, medicamentos e entregas.</p>
           </div>
-        </a>
-      </section>
+        </div>
+      </div>
+    </div>
 
-      <footer class="footer-actions">
-        <button class="config-button" data-action="configuracoes">
-          <i class="fas fa-cog"></i> Configurações
-        </button>
-        <button class="logout-button" data-action="sair">
-          <i class="fas fa-sign-out-alt"></i> Sair
-        </button>
-      </footer>
-    </main>
-  `;
-
+    <div class="d-flex justify-content-between align-items-center mt-5">
+      <button class="btn btn-outline-secondary config-button">
+        <i class="fas fa-cog"></i> Configurações
+      </button>
+      <button class="btn btn-danger logout-button">
+        <i class="fas fa-sign-out-alt"></i> Sair
+      </button>
+    </div>
+  </div>
+`;
   // === Interações ===
 
   // Cards de ação
