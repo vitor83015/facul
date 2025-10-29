@@ -6,26 +6,32 @@ export async function renderListaMedicamentos() {
   if (!app) return console.error("#app não encontrado");
 
   app.innerHTML = `
-    <div class="page-container">
-      <header class="page-header">
-        <button class="back-button" title="Voltar para Home">
-          <i class="fas fa-arrow-left"></i>
-        </button>
-        <i class="fas fa-capsules page-header-icon"></i>
-        <div class="header-text">
-          <h1 class="page-title">Medicamentos em Estoque</h1>
-          <p class="page-subtitle">Visualize e gerencie o estoque de medicamentos</p>
+    <div class="container py-5">
+      <div class="card shadow-lg p-4">
+        <header class="d-flex align-items-center mb-4">
+          <button class="btn btn-outline-primary me-3 back-button" title="Voltar para Home">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+          <div class="d-flex align-items-center">
+            <i class="fas fa-capsules fs-3 text-primary me-2"></i>
+            <div>
+              <h2 class="fw-bold mb-1">Medicamentos em Estoque</h2>
+              <p class="text-muted mb-0">Visualize e gerencie o estoque de medicamentos</p>
+            </div>
+          </div>
+        </header>
+
+        <div class="mb-4">
+          <input type="search" class="form-control" placeholder="Buscar por medicamento, princípio ativo ou lote..." id="searchMedications">
         </div>
-      </header>
 
-      <input type="search" class="search-bar" placeholder="Buscar por medicamento, princípio ativo ou lote..." id="searchMedications">
+        <section id="medications-container" class="mb-3">
+          <p>Carregando medicamentos...</p>
+        </section>
 
-      <section class="delivery-list" id="medications-container">
-        <p>Carregando medicamentos...</p>
-      </section>
-
-      <div class="total-entregas" id="total-medications">
-        Total de itens em estoque: 0
+        <div class="text-end text-muted fw-semibold" id="total-medications">
+          Total de itens em estoque: 0
+        </div>
       </div>
     </div>
   `;
@@ -44,27 +50,36 @@ export async function renderListaMedicamentos() {
       const medications = await getMedications();
 
       if (!medications.length) {
-        container.innerHTML = "<p>Nenhum medicamento registrado.</p>";
+        container.innerHTML = `
+          <div class="alert alert-warning text-center" role="alert">
+            Nenhum medicamento registrado.
+          </div>`;
         totalEl.textContent = "Total de itens em estoque: 0";
         return;
       }
 
       function renderList(list) {
         container.innerHTML = list.map(m => `
-          <div class="delivery-item" style="grid-template-columns: 2fr 1fr;">
-            <div class="delivery-info">
-              <span class="client-name">${m.name}</span>
-              <span class="med-info"><i class="fas fa-flask"></i> Princípio Ativo: ${m.active}</span>
-              <span class="med-info"><i class="fas fa-industry"></i> Fabricante: ${m.manufacturer}</span>
-            </div>
-            <div class="delivery-info">
-              <span class="client-info"><i class="fas fa-hashtag"></i> Lote: ${m.batch || '-'}</span>
-              <span class="client-info" style="color: #28a745; font-weight: 600;">
-                <i class="fas fa-warehouse"></i> Estoque: ${m.stock} und.
-              </span>
-              <div class="action-buttons" style="margin-top: 5px;">
-                <button class="edit-btn" data-id="${m.id}"><i class="fas fa-edit"></i> Editar</button>
-                <button class="delete-btn" data-id="${m.id}" style="margin-left: 5px;"><i class="fas fa-trash"></i> Deletar</button>
+          <div class="border rounded p-3 mb-3 bg-light">
+            <div class="row">
+              <div class="col-md-6">
+                <h5 class="fw-bold mb-1">${m.name}</h5>
+                <p class="mb-1 text-secondary"><i class="fas fa-flask me-1"></i> Princípio Ativo: ${m.active}</p>
+                <p class="mb-1 text-secondary"><i class="fas fa-industry me-1"></i> Fabricante: ${m.manufacturer}</p>
+              </div>
+              <div class="col-md-6 d-flex flex-column align-items-md-end">
+                <p class="mb-1"><i class="fas fa-hashtag me-1"></i> Lote: ${m.batch || '-'}</p>
+                <p class="mb-1 fw-semibold text-success">
+                  <i class="fas fa-warehouse me-1"></i> Estoque: ${m.stock} und.
+                </p>
+                <div class="mt-2">
+                  <button class="btn btn-sm btn-outline-primary edit-btn me-2" data-id="${m.id}">
+                    <i class="fas fa-edit"></i> Editar
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${m.id}">
+                    <i class="fas fa-trash"></i> Deletar
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -112,7 +127,9 @@ export async function renderListaMedicamentos() {
 
     } catch (err) {
       console.error("Erro ao carregar medicamentos:", err);
-      container.innerHTML = `<p>Falha ao carregar medicamentos: ${err.message}</p>`;
+      container.innerHTML = `<div class="alert alert-danger" role="alert">
+        Falha ao carregar medicamentos: ${err.message}
+      </div>`;
       totalEl.textContent = "Total de itens em estoque: 0";
     }
   }
