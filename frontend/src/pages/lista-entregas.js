@@ -1,5 +1,5 @@
 // frontend/src/pages/lista-entregas.js
-import { getDeliveries, deleteDelivery } from '../api/ClientApi.js';
+import { getDeliveries, deleteDelivery } from '../api/DeliveryApi.js';
 
 export async function renderListaEntregas() {
   const app = document.getElementById('app');
@@ -8,7 +8,7 @@ export async function renderListaEntregas() {
   app.innerHTML = `
     <div class="page-container">
       <header class="page-header">
-        <button class="back-button" title="Voltar para Home">
+        <button class="back-button" title="Voltar para Listas">
           <i class="fas fa-arrow-left"></i>
         </button>
         <i class="fas fa-list-ul page-header-icon"></i>
@@ -34,7 +34,7 @@ export async function renderListaEntregas() {
 
   // Botão voltar
   app.querySelector('.back-button').addEventListener('click', () =>
-    window.dispatchEvent(new CustomEvent('navigate', { detail: 'home' }))
+    window.dispatchEvent(new CustomEvent('navigate', { detail: 'listas-hub' }))
   );
 
   async function loadDeliveries() {
@@ -50,16 +50,18 @@ export async function renderListaEntregas() {
       function renderList(list) {
         container.innerHTML = '';
         list.forEach(d => {
-          const dateFormatted = new Date(d.date).toLocaleDateString('pt-BR');
-          const timeFormatted = d.time;
+          const clientName = d.client?.name || "Cliente desconhecido";
+          const medName = d.medication?.name || "Medicamento não informado";
+          const dateFormatted = d.date ? new Date(d.date).toLocaleDateString('pt-BR') : "Data não informada";
+          const timeFormatted = d.time || "Horário não informado";
 
           const div = document.createElement('div');
           div.classList.add('delivery-item');
           div.innerHTML = `
             <div class="delivery-info">
-              <span class="client-name">${d.client.name} <span style="font-weight: 400; font-size: 0.8rem;">(ID: #${d.id})</span></span>
-              <span class="med-info"><i class="fas fa-capsules"></i> ${d.medication.name} - ${d.quantity}x</span>
-              <span class="client-info"><i class="fas fa-map-marker-alt"></i> ${d.address}</span>
+              <span class="client-name">${clientName} <span style="font-weight: 400; font-size: 0.8rem;">(ID: #${d.id})</span></span>
+              <span class="med-info"><i class="fas fa-capsules"></i> ${medName} - ${d.quantity || '?'}x</span>
+              <span class="client-info"><i class="fas fa-map-marker-alt"></i> ${d.address || 'Endereço não informado'}</span>
             </div>
             <div class="delivery-info">
               <span class="client-info"><i class="fas fa-calendar-alt"></i> ${dateFormatted}</span>
@@ -78,7 +80,7 @@ export async function renderListaEntregas() {
 
       renderList(deliveries);
 
-      // ===== Eventos de deletar =====
+      // Eventos
       container.addEventListener('click', async e => {
         const id = e.target.dataset.id;
         if (!id) return;
@@ -99,12 +101,12 @@ export async function renderListaEntregas() {
         }
       });
 
-      // ===== Filtro simples =====
+      // Filtro simples
       searchInput.addEventListener('input', () => {
         const term = searchInput.value.toLowerCase();
         const filtered = deliveries.filter(d =>
-          d.client.name.toLowerCase().includes(term) ||
-          d.medication.name.toLowerCase().includes(term)
+          d.client?.name?.toLowerCase().includes(term) ||
+          d.medication?.name?.toLowerCase().includes(term)
         );
         renderList(filtered);
       });

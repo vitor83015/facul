@@ -1,30 +1,38 @@
+// src/pages/lista-clientes.js
 import { getClients, deleteClient } from '../api/ClientApi.js';
 import { renderCadastroClientes } from './cadastro-clientes.js'; // import para edição
 
 export async function renderListaClientes() {
   const app = document.getElementById('app');
+  if (!app) return console.error("#app não encontrado");
 
   app.innerHTML = `
-    <div class="page-container">
-      <header class="page-header">
-        <button class="back-button" title="Voltar para Listas" aria-label="Voltar">
-          <i class="fas fa-arrow-left"></i>
-        </button>
-        <i class="fas fa-user-friends page-header-icon"></i>
-        <div class="header-text">
-          <h1 class="page-title">Clientes Registrados</h1>
-          <p class="page-subtitle">Visualize e gerencie todos os clientes da farmácia</p>
+    <div class="container py-5 d-flex justify-content-center">
+      <div class="card shadow-lg p-4 w-100" style="max-width: 900px;">
+        <header class="d-flex align-items-center mb-4">
+          <button class="btn btn-outline-primary me-3 back-button" title="Voltar para Listas" aria-label="Voltar">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+          <div class="d-flex align-items-center">
+            <i class="fas fa-user-friends fs-3 text-primary me-2"></i>
+            <div>
+              <h2 class="fw-bold mb-1">Clientes Registrados</h2>
+              <p class="text-muted mb-0">Visualize e gerencie todos os clientes da farmácia</p>
+            </div>
+          </div>
+        </header>
+
+        <div class="mb-4">
+          <input type="search" class="form-control" id="searchClients" placeholder="🔍 Buscar por nome ou CPF...">
         </div>
-      </header>
 
-      <input type="search" class="search-bar" placeholder="Buscar por nome ou CPF...">
+        <section id="clients-container" class="list-group mb-3">
+          <p>Carregando clientes...</p>
+        </section>
 
-      <section class="delivery-list" id="clients-container">
-        <!-- Clientes do backend vão aparecer aqui -->
-      </section>
-
-      <div class="total-entregas" id="total-clients">
-        Total de clientes: 0
+        <div class="text-end text-muted" id="total-clients">
+          Total de clientes: 0
+        </div>
       </div>
     </div>
   `;
@@ -38,56 +46,75 @@ export async function renderListaClientes() {
 
   const container = document.getElementById('clients-container');
   const totalClientsEl = document.getElementById('total-clients');
+  const searchInput = document.getElementById('searchClients');
 
   try {
     const clients = await getClients();
 
     if (clients.length === 0) {
-      container.innerHTML = '<p>Nenhum cliente cadastrado.</p>';
+      container.innerHTML = '<p class="text-center text-muted">Nenhum cliente cadastrado.</p>';
       totalClientsEl.textContent = 'Total de clientes: 0';
       return;
     }
 
-    clients.forEach(client => {
-      const clientDiv = document.createElement('div');
-      clientDiv.classList.add('delivery-item');
-      clientDiv.style.gridTemplateColumns = '2fr 1fr';
-      clientDiv.innerHTML = `
-        <div class="delivery-info">
-          <span class="client-name">${client.name} <span style="font-weight: 400; font-size: 0.8rem;">(ID: #${client.id})</span></span>
-          <span class="client-info"><i class="fas fa-id-card"></i> CPF: ${client.cpf}</span>
-          <span class="client-info"><i class="fas fa-map-marker-alt"></i> ${client.address}</span>
-        </div>
-        <div class="delivery-info">
-          <span class="client-info"><i class="fas fa-phone"></i> ${client.phone}</span>
-          <span class="client-info"><i class="fas fa-envelope"></i> ${client.email}</span>
-        </div>
-        <div class="delivery-actions">
-          <button class="delete-btn" data-id="${client.id}">Deletar</button>
-        </div>
-      `;
-      container.appendChild(clientDiv);
-    });
+    function renderList(list) {
+      container.innerHTML = list
+        .map(
+          (client) => `
+          <div class="list-group-item d-flex justify-content-between align-items-start flex-wrap py-3 border rounded-3 mb-3 shadow-sm">
+            <div class="me-3">
+              <h5 class="fw-bold mb-1">${client.name} <span class="text-muted fw-normal" style="font-size: 0.9rem;">(ID: #${client.id})</span></h5>
+              <p class="mb-1"><i class="fas fa-id-card text-primary me-1"></i> CPF: ${client.cpf}</p>
+              <p class="mb-1"><i class="fas fa-map-marker-alt text-danger me-1"></i> ${client.address}</p>
+              <p class="mb-1"><i class="fas fa-phone text-success me-1"></i> ${client.phone}</p>
+              <p class="mb-0"><i class="fas fa-envelope text-secondary me-1"></i> ${client.email}</p>
+            </div>
+            <div class="d-flex flex-column align-items-end">
+              <button class="btn btn-sm btn-outline-danger mb-2 delete-btn" data-id="${client.id}">
+                <i class="fas fa-trash"></i> Deletar
+              </button>
+              <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${client.id}">
+                <i class="fas fa-edit"></i> Editar
+              </button>
+            </div>
+          </div>
+        `
+        )
+        .join('');
 
-    totalClientsEl.textContent = `Total de clientes: ${clients.length}`;
+      totalClientsEl.textContent = `Total de clientes: ${list.length}`;
+    }
+
+    renderList(clients);
+
+    // === Eventos de filtro ===
+    searchInput.addEventListener('input', () => {
+      const term = searchInput.value.toLowerCase();
+      const filtered = clients.filter(
+        (c) =>
+          c.name.toLowerCase().includes(term) ||
+          c.cpf.toLowerCase().includes(term)
+      );
+      renderList(filtered);
+    });
 
     // === Eventos de editar e deletar ===
     container.addEventListener('click', async (e) => {
-      if (e.target.classList.contains('delete-btn')) {
-        const id = e.target.getAttribute('data-id');
-        if (confirm("Deseja realmente deletar este cliente?")) {
-          await deleteClient(id); // token já é enviado pelo ClientApi.js
-          renderListaClientes(); // re-renderiza
+      if (e.target.closest('.delete-btn')) {
+        const id = e.target.closest('.delete-btn').dataset.id;
+        if (confirm('Deseja realmente deletar este cliente?')) {
+          await deleteClient(id);
+          alert('Cliente deletado com sucesso!');
+          renderListaClientes(); // recarrega
         }
       }
 
-      if (e.target.classList.contains('edit-btn')) {
-        const id = e.target.getAttribute('data-id');
+      if (e.target.closest('.edit-btn')) {
+        const id = e.target.closest('.edit-btn').dataset.id;
         renderCadastroClientes(id); // abre o formulário preenchido
       }
     });
-
   } catch (error) {
-    container.innerHTML = `<p>Erro ao carregar clientes: ${error.message}</p>`;
+    container.innerHTML = `<p class="text-danger">Erro ao carregar clientes: ${error.message}</p>`;
   }
 }
