@@ -1,5 +1,7 @@
 // src/pages/registro-entregas.js
-import { getClients, getMedications, createDelivery, getDeliveryById, updateDelivery } from '../api/ClientApi.js';
+import { getClients, getMedications } from '../api/ClientApi.js';
+import { createDelivery, getDeliveryById, updateDelivery } from '../api/DeliveryApi.js';
+import '../styles/registro-entregas.css';
 
 export async function renderRegistroEntregas(id = null) {
   const app = document.getElementById('app');
@@ -104,10 +106,10 @@ export async function renderRegistroEntregas(id = null) {
       medSelect.value = delivery.medication.id;
       document.getElementById('quantidade').value = delivery.quantity;
       const dt = new Date(delivery.date);
-      document.getElementById('data').value = dt.toISOString().slice(0, 10); // YYYY-MM-DD
-      document.getElementById('horario').value = delivery.time; 
+      document.getElementById('data').value = dt.toISOString().slice(0, 10);
+      document.getElementById('horario').value = delivery.time;
       document.getElementById('endereco').value = delivery.address;
-      document.getElementById('observacoes').value = delivery.notes;
+      document.getElementById('observacoes').value = delivery.notes || "";
     }
 
   } catch (err) {
@@ -121,45 +123,43 @@ export async function renderRegistroEntregas(id = null) {
 
     const clienteId = Number(clienteSelect.value);
     const medicamentoId = Number(medSelect.value);
-    const quantity = Number(document.getElementById('quantidade').value); // <- corrigido
+    const quantity = Number(document.getElementById('quantidade').value);
     const dateInput = document.getElementById('data').value;
     const timeInput = document.getElementById('horario').value;
     const endereco = document.getElementById('endereco').value;
     const observacoes = document.getElementById('observacoes').value;
 
-    // ===== Validar campos obrigatórios =====
     if (!clienteId || !medicamentoId || !quantity || !dateInput || !timeInput || !endereco) {
       return alert("Preencha todos os campos obrigatórios!");
     }
 
-// ===== Montar deliveryData =====
-const deliveryData = {
-  clientId: clienteId,
-  medicationId: medicamentoId,
-  quantity: quantity,
-  date: dateInput,  // já vem como "YYYY-MM-DD" do input
-  time: timeInput,  // já vem como "HH:mm" do input
-  address: endereco,
-  notes: observacoes,
-};
+    const deliveryData = {
+      clientId: clienteId,
+      medicationId: medicamentoId,
+      quantity: quantity,
+      date: dateInput,
+      time: timeInput,
+      address: endereco,
+      notes: observacoes,
+    };
 
-try {
-  if (id) {
-    await updateDelivery(id, deliveryData);
-    alert('Entrega atualizada com sucesso!');
-  } else {
-    await createDelivery(deliveryData);
-    alert('Entrega registrada com sucesso!');
-  }
-  window.dispatchEvent(new CustomEvent('navigate', { detail: 'lista-entregas' }));
-} catch (err) {
-  console.error(err);
-  alert('Erro ao salvar entrega: ' + (err.message || err));
-}
+    try {
+      if (id) {
+        await updateDelivery(id, deliveryData);
+        alert('Entrega atualizada com sucesso!');
+      } else {
+        await createDelivery(deliveryData);
+        alert('Entrega registrada com sucesso!');
+      }
+      window.dispatchEvent(new CustomEvent('navigate', { detail: 'lista-entregas' }));
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao salvar entrega: ' + (err.message || err));
+    }
   });
 
   // ===== Cancelar =====
   document.getElementById('cancelarEntrega').addEventListener('click', () => {
-  window.dispatchEvent(new CustomEvent('navigate', { detail: 'lista-entregas' }));
-});
+    window.dispatchEvent(new CustomEvent('navigate', { detail: 'lista-entregas' }));
+  });
 }
