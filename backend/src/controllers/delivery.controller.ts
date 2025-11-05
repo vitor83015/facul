@@ -12,18 +12,9 @@ export async function getAllDeliveries(req: Request, res: Response) {
       },
     });
     res.json(deliveries);
-   } catch (err: any) {
-    console.error('Erro ao criar entrega:', err);
-
-    if (err.code === 'P2003') {
-      return res.status(400).json({
-        message: 'Cliente ou medicamento não encontrado (verifique os IDs)',
-      });
-    }
-
-    res.status(500).json({ message: 'Erro ao criar entrega', error: err });
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao listar entregas', error: err });
   }
-
 }
 
 // ================== BUSCAR ENTREGA POR ID ==================

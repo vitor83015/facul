@@ -1,18 +1,34 @@
-// backend/src/controllers/medication.controller.ts
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 
 const prisma = new PrismaClient();
 
-// ===== Criar medicamento =====
+// ===== Criar medicamento (apenas ADMIN) =====
 export const createMedication = async (req: Request, res: Response) => {
   try {
-    const { name, dosage } = req.body;
+    const {
+      name,
+      active,
+      dosage,
+      manufacturer,
+      batch,
+      expiration,
+      stock,
+      notes,
+    } = req.body;
+    const userId = (req as any).user?.id; // pegando id do usuário logado
 
-    const medication = await prisma.medication.create({
+    const medication = await prisma.medicine.create({
       data: {
         name,
+        active,
         dosage,
+        manufacturer,
+        batch,
+        expiration,
+        stock: Number(stock) || 0,
+        notes,
+        createdBy: userId,
       },
     });
 
@@ -23,11 +39,12 @@ export const createMedication = async (req: Request, res: Response) => {
   }
 };
 
+
 // ===== Buscar medicamento por ID =====
 export const getMedicationById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const medication = await prisma.medication.findUnique({
+    const medication = await prisma.medicine.findUnique({
       where: { id: Number(id) },
     });
 
@@ -45,7 +62,10 @@ export const getMedicationById = async (req: Request, res: Response) => {
 // ===== Listar todos medicamentos =====
 export const listMedications = async (req: Request, res: Response) => {
   try {
-    const medications = await prisma.medication.findMany();
+    const medications = await prisma.medicine.findMany({
+      include: { user: { select: { id: true, name: true, role: true } } },
+    });
+
     res.json(medications);
   } catch (error) {
     console.error("Erro ao listar medicamentos:", error);
@@ -53,17 +73,32 @@ export const listMedications = async (req: Request, res: Response) => {
   }
 };
 
-// ===== Atualizar medicamento =====
+// ===== Atualizar medicamento (apenas ADMIN) =====
 export const updateMedication = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, dosage } = req.body;
+    const {
+      name,
+      active,
+      dosage,
+      manufacturer,
+      batch,
+      expiration,
+      stock,
+      notes,
+    } = req.body;
 
-    const medication = await prisma.medication.update({
+    const medication = await prisma.medicine.update({
       where: { id: Number(id) },
       data: {
         name,
+        active,
         dosage,
+        manufacturer,
+        batch,
+        expiration,
+        stock: Number(stock) || 0,
+        notes,
       },
     });
 
@@ -74,12 +109,12 @@ export const updateMedication = async (req: Request, res: Response) => {
   }
 };
 
-// ===== Deletar medicamento =====
+// ===== Deletar medicamento (apenas ADMIN) =====
 export const deleteMedication = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    await prisma.medication.delete({
+    await prisma.medicine.delete({
       where: { id: Number(id) },
     });
 
