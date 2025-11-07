@@ -7,7 +7,7 @@ export async function getAllDeliveries(req: Request, res: Response) {
   try {
     const deliveries = await prisma.delivery.findMany({
       include: {
-        client: true,
+        user: true,        // 👈 alterado de client para user
         medication: true,
       },
     });
@@ -24,7 +24,7 @@ export async function getDeliveryById(req: Request, res: Response) {
     const delivery = await prisma.delivery.findUnique({
       where: { id: Number(id) },
       include: {
-        client: true,
+        user: true,        // 👈 alterado de client para user
         medication: true,
       },
     });
@@ -41,9 +41,9 @@ export async function getDeliveryById(req: Request, res: Response) {
 
 // ================== CRIAR ENTREGA ==================
 export async function createDelivery(req: Request, res: Response) {
-  const { clientId, medicationId, quantity, date, time, address, notes } = req.body;
+  const { userId, medicationId, quantity, date, time, address, notes } = req.body;
 
-  if (!clientId || !medicationId || !quantity || !date || !time || !address) {
+  if (!userId || !medicationId || !quantity || !date || !time || !address) {
     return res.status(400).json({ message: 'Campos obrigatórios faltando' });
   }
 
@@ -56,16 +56,16 @@ export async function createDelivery(req: Request, res: Response) {
 
     const delivery = await prisma.delivery.create({
       data: {
-        clientId: Number(clientId),
+        userId: Number(userId), // 👈 alterado de clientId para userId
         medicationId: Number(medicationId),
         quantity: Number(quantity),
         date: dateTime,
-        time, // string HH:mm
+        time,
         address,
         notes,
       },
       include: {
-        client: true,
+        user: true,        // 👈 alterado de client para user
         medication: true,
       },
     });
@@ -75,34 +75,40 @@ export async function createDelivery(req: Request, res: Response) {
     console.error('Erro ao criar entrega:', err);
     res.status(500).json({ message: 'Erro ao criar entrega', error: err });
   }
-
 }
 
-// ================== ATUALIZAR ENTREGA ==================
+/// ================== ATUALIZAR ENTREGA ==================
 export async function updateDelivery(req: Request, res: Response) {
   const { id } = req.params;
-  const { clientId, medicationId, quantity, date, time, address, notes } = req.body;
+  const { userId, medicationId, quantity, date, time, address, notes } = req.body;
 
   try {
+    // ✅ Converter date + time para um objeto Date real
+    const dateTime = new Date(`${date}T${time}`);
+    if (isNaN(dateTime.getTime())) {
+      return res.status(400).json({ message: 'Data ou hora inválida' });
+    }
+
     const updated = await prisma.delivery.update({
       where: { id: Number(id) },
       data: {
-        clientId: Number(clientId),
+        userId: Number(userId),
         medicationId: Number(medicationId),
         quantity: Number(quantity),
-        date,
+        date: dateTime, // ✅ Agora é Date
         time,
         address,
         notes,
       },
       include: {
-        client: true,
+        user: true,
         medication: true,
       },
     });
 
     res.json(updated);
   } catch (err) {
+    console.error('Erro ao atualizar entrega:', err);
     res.status(500).json({ message: 'Erro ao atualizar entrega', error: err });
   }
 }

@@ -102,7 +102,7 @@ export async function renderRegistroEntregas(id = null) {
     // ===== Se estiver editando, preencher dados =====
     if (id) {
       const delivery = await getDeliveryById(id);
-      clienteSelect.value = delivery.client.id;
+      clienteSelect.value = delivery.user.id;     // 👈 atualizado para user
       medSelect.value = delivery.medication.id;
       document.getElementById('quantidade').value = delivery.quantity;
       const dt = new Date(delivery.date);
@@ -134,9 +134,9 @@ export async function renderRegistroEntregas(id = null) {
     }
 
     const deliveryData = {
-      clientId: clienteId,
+      userId: clienteId,       // 👈 trocado de clientId para userId
       medicationId: medicamentoId,
-      quantity: quantity,
+      quantity,
       date: dateInput,
       time: timeInput,
       address: endereco,
