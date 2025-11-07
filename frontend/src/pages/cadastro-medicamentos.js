@@ -1,4 +1,3 @@
-// frontend/src/pages/cadastroMedicamentos.js
 import { createMedication, updateMedication, getMedicationById } from "../api/MedicationApi.js";
 
 export async function renderCadastroMedicamentos(id = null) {
@@ -21,32 +20,32 @@ export async function renderCadastroMedicamentos(id = null) {
         <form class="row g-3">
           <div class="col-12">
             <label for="nome" class="form-label fw-semibold">Nome do Medicamento *</label>
-            <input type="text" id="nome" class="form-control" placeholder="Digite o nome do medicamento" required>
+            <input type="text" id="nome" class="form-control" maxlength="100" placeholder="Digite o nome do medicamento" required>
           </div>
 
           <div class="col-md-6">
             <label for="ativo" class="form-label fw-semibold">Princípio Ativo *</label>
-            <input type="text" id="ativo" class="form-control" placeholder="Digite o princípio ativo" required>
+            <input type="text" id="ativo" class="form-control" maxlength="50" placeholder="Digite o princípio ativo" required>
           </div>
 
           <div class="col-md-6">
             <label for="dosagem" class="form-label fw-semibold">Dosagem *</label>
-            <input type="text" id="dosagem" class="form-control" placeholder="Ex: 500mg" required>
+            <input type="text" id="dosagem" class="form-control" maxlength="20" placeholder="Ex: 500mg" required>
           </div>
 
           <div class="col-md-6">
             <label for="fabricante" class="form-label fw-semibold">Fabricante *</label>
-            <input type="text" id="fabricante" class="form-control" placeholder="Nome do fabricante" required>
+            <input type="text" id="fabricante" class="form-control" maxlength="50" placeholder="Nome do fabricante" required>
           </div>
 
           <div class="col-md-6">
             <label for="lote" class="form-label fw-semibold">Lote</label>
-            <input type="text" id="lote" class="form-control" placeholder="Número do lote">
+            <input type="text" id="lote" class="form-control" maxlength="20" placeholder="Número do lote">
           </div>
 
           <div class="col-md-6">
             <label for="validade" class="form-label fw-semibold">Validade *</label>
-            <input type="text" id="validade" class="form-control" placeholder="dd/mm/aaaa" required>
+            <input type="text" id="validade" class="form-control" maxlength="10" placeholder="dd/mm/aaaa" required>
           </div>
 
           <div class="col-md-6">
@@ -56,7 +55,7 @@ export async function renderCadastroMedicamentos(id = null) {
 
           <div class="col-12">
             <label for="observacoes" class="form-label fw-semibold">Observações</label>
-            <textarea id="observacoes" class="form-control" placeholder="Informações adicionais sobre o medicamento"></textarea>
+            <textarea id="observacoes" class="form-control" maxlength="200" placeholder="Informações adicionais sobre o medicamento"></textarea>
           </div>
 
           <div class="d-flex justify-content-between mt-4">
@@ -74,7 +73,7 @@ export async function renderCadastroMedicamentos(id = null) {
 
   const form = app.querySelector("form");
 
-  // Botão de voltar
+  // Voltar
   app.querySelectorAll(".back-button").forEach(btn => {
     btn.addEventListener("click", e => {
       e.preventDefault();
@@ -82,7 +81,7 @@ export async function renderCadastroMedicamentos(id = null) {
     });
   });
 
-  // Se tiver id, buscar medicamento e preencher formulário
+  // Se tiver id, preencher
   if (id) {
     try {
       const token = localStorage.getItem("token");
@@ -98,11 +97,19 @@ export async function renderCadastroMedicamentos(id = null) {
       app.querySelector("#observacoes").value = med.notes;
     } catch (err) {
       console.error("Erro ao carregar medicamento:", err);
-      alert("Não foi possível carregar os dados do medicamento para edição.");
+      alert("Não foi possível carregar os dados do medicamento.");
     }
   }
 
-  // Evento submit
+  // Validar validade dd/mm/aaaa
+  const validadeInput = document.getElementById('validade');
+  validadeInput.addEventListener('input', e => {
+    e.target.value = e.target.value.replace(/[^\d]/g, '').slice(0, 8);
+    if(e.target.value.length >= 2 && e.target.value.length < 4) e.target.value = e.target.value.slice(0,2) + '/' + e.target.value.slice(2);
+    if(e.target.value.length >= 4) e.target.value = e.target.value.slice(0,5) + '/' + e.target.value.slice(5);
+  });
+
+  // Submit
   form.addEventListener("submit", async e => {
     e.preventDefault();
 

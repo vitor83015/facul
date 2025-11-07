@@ -1,4 +1,3 @@
-// src/pages/registro-entregas.js
 import { getClients, getMedications } from '../api/ClientApi.js';
 import { createDelivery, getDeliveryById, updateDelivery } from '../api/DeliveryApi.js';
 import '../styles/registro-entregas.css';
@@ -9,7 +8,7 @@ export async function renderRegistroEntregas(id = null) {
   app.innerHTML = `
     <div class="page-container">
       <header class="page-header">
-        <button class="back-button" title="Voltar para Home" aria-label="Voltar">
+        <button class="back-button" title="Voltar" aria-label="Voltar">
           <i class="fas fa-arrow-left"></i>
         </button>
         <i class="fas fa-box-open page-header-icon"></i>
@@ -52,12 +51,12 @@ export async function renderRegistroEntregas(id = null) {
 
           <div class="form-group" style="grid-column: 1 / -1; margin-top: 20px;">
             <label for="endereco">Endereço de Entrega *</label>
-            <input type="text" id="endereco" placeholder="Rua, número, bairro, cidade" required>
+            <input type="text" id="endereco" maxlength="100" placeholder="Rua, número, bairro, cidade" required>
           </div>
 
           <div class="form-group" style="grid-column: 1 / -1; margin-top: 20px;">
             <label for="observacoes">Observações</label>
-            <textarea id="observacoes" placeholder="Informações adicionais sobre a entrega"></textarea>
+            <textarea id="observacoes" maxlength="200" placeholder="Informações adicionais sobre a entrega"></textarea>
           </div>
         </div>
 
@@ -69,7 +68,6 @@ export async function renderRegistroEntregas(id = null) {
     </div>
   `;
 
-  // ===== Voltar para Home =====
   document.querySelector('.back-button').addEventListener('click', () => {
     window.dispatchEvent(new CustomEvent('navigate', { detail: 'home' }));
   });
@@ -99,10 +97,9 @@ export async function renderRegistroEntregas(id = null) {
       medSelect.appendChild(opt);
     });
 
-    // ===== Se estiver editando, preencher dados =====
     if (id) {
       const delivery = await getDeliveryById(id);
-      clienteSelect.value = delivery.user.id;     // 👈 atualizado para user
+      clienteSelect.value = delivery.user.id;
       medSelect.value = delivery.medication.id;
       document.getElementById('quantidade').value = delivery.quantity;
       const dt = new Date(delivery.date);
@@ -134,7 +131,7 @@ export async function renderRegistroEntregas(id = null) {
     }
 
     const deliveryData = {
-      userId: clienteId,       // 👈 trocado de clientId para userId
+      userId: clienteId,
       medicationId: medicamentoId,
       quantity,
       date: dateInput,
@@ -158,7 +155,6 @@ export async function renderRegistroEntregas(id = null) {
     }
   });
 
-  // ===== Cancelar =====
   document.getElementById('cancelarEntrega').addEventListener('click', () => {
     window.dispatchEvent(new CustomEvent('navigate', { detail: 'lista-entregas' }));
   });

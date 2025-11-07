@@ -1,71 +1,79 @@
-import { createClient, getClientById, updateClient } from '../api/ClientApi.js';
+import { createClient } from '../api/ClientApi.js';
+import { setupMasks, validateEmailGmail } from '../helpers/formatters.js';
 
-export async function renderCadastroClientes(id = null) {
+export function renderCadastroClientes() {
   const app = document.getElementById('app');
   if (!app) return console.error('Elemento #app não encontrado.');
-
-  let clientData = null;
-
-  if (id) {
-    try {
-      clientData = await getClientById(id);
-    } catch (err) {
-      console.error("Erro ao carregar cliente:", err);
-      alert("Erro ao carregar dados do cliente.");
-    }
-  }
 
   app.innerHTML = `
     <div class="page-container">
       <header class="page-header">
-        <a href="#" id="back-link" class="back-button"><i class="fas fa-arrow-left"></i></a>
-        <h1 class="page-title">${id ? "Editar Cliente" : "Cadastro de Clientes"}</h1>
+        <a href="#" id="back-link" class="back-button" title="Voltar" aria-label="Voltar">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <i class="fas fa-user-friends page-header-icon"></i>
+        <div class="header-text">
+          <h1 class="page-title">Cadastro de Clientes</h1>
+          <p class="page-subtitle">Sprint 2 – Cadastre novos clientes da farmácia</p>
+        </div>
       </header>
 
-      <form class="form-card" id="form-cadastro-cliente">
-        <input type="hidden" id="cliente-id" value="${id || ''}">
-
-        <div class="form-group">
-          <label>Nome *</label>
-          <input type="text" id="nome" value="${clientData?.name || ''}" required>
-        </div>
-        <div class="form-group">
-          <label>CPF *</label>
-          <input type="text" id="cpf" value="${clientData?.cpf || ''}" required>
-        </div>
-        <div class="form-group">
-          <label>Telefone *</label>
-          <input type="tel" id="telefone" value="${clientData?.phone || ''}" required>
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="email" value="${clientData?.email || ''}">
-        </div>
-        <div class="form-group">
-          <label>Endereço</label>
-          <input type="text" id="endereco" value="${clientData?.address || ''}">
-        </div>
-        <div class="form-group">
-          <label>Cidade</label>
-          <input type="text" id="cidade" value="${clientData?.city || ''}">
-        </div>
-        <div class="form-group">
-          <label>Estado</label>
-          <input type="text" id="estado" value="${clientData?.state || ''}">
+      <form class="form-card" id="form-cadastro-cliente" novalidate>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="nome">Nome Completo *</label>
+            <input type="text" id="nome" placeholder="Digite o nome completo" required>
+          </div>
+          <div class="form-group">
+            <label for="cpf">CPF *</label>
+            <input type="text" id="cpf" placeholder="000.000.000-00" required>
+          </div>
+          <div class="form-group">
+            <label for="telefone">Telefone *</label>
+            <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" placeholder="email@exemplo.com">
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1; margin-top: 20px;">
+            <label>Endereço</label>
+            <input type="text" id="endereco" placeholder="Rua, número, bairro">
+          </div>
+          <div class="form-group">
+            <label for="cidade">Cidade</label>
+            <input type="text" id="cidade" placeholder="Digite a cidade">
+          </div>
+          <div class="form-group">
+            <label for="estado">Estado</label>
+            <input type="text" id="estado" placeholder="UF">
+          </div>
         </div>
 
         <div class="form-actions">
-          <button type="button" id="btn-cancel" class="secondary-button">Cancelar</button>
-          <button type="submit" class="primary-button">${id ? "Salvar Alterações" : "Cadastrar Cliente"}</button>
+          <button type="button" class="secondary-button back-button" id="btn-cancel">Cancelar</button>
+          <button type="submit" class="primary-button" id="btn-save">Salvar Cliente</button>
         </div>
       </form>
     </div>
   `;
 
-  document.getElementById('btn-cancel').addEventListener('click', () => {
-    window.dispatchEvent(new CustomEvent('navigate', { detail: 'lista-clientes' }));
+  // === Eventos de voltar ===
+  app.querySelectorAll('.back-button, #back-link').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.dispatchEvent(new CustomEvent('navigate', { detail: 'home' }));
+    });
   });
 
+  // === Máscaras e validações ===
+  setupMasks({
+    cpfSelector: '#cpf',
+    telefoneSelector: '#telefone', // ✅ corrigido
+    estadoSelector: '#estado'
+  });
+
+  // === Form submit ===
   const form = document.getElementById('form-cadastro-cliente');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -80,19 +88,20 @@ export async function renderCadastroClientes(id = null) {
       state: document.getElementById('estado').value.trim(),
     };
 
-    try {
-      if (id) {
-        await updateClient(id, data);
-        alert('Cliente atualizado com sucesso!');
-      } else {
-        await createClient(data);
-        alert('Cliente cadastrado com sucesso!');
-      }
+    // === Validação de email Gmail ===
+    if (data.email && !validateEmailGmail(data.email)) {
+      alert('O e-mail deve ser um Gmail válido (ex.: usuario@gmail.com)');
+      return;
+    }
 
+    try {
+      await createClient(data);
+      alert('Cliente cadastrado com sucesso!');
+      form.reset();
       window.dispatchEvent(new CustomEvent('navigate', { detail: 'lista-clientes' }));
     } catch (error) {
-      console.error('Erro ao salvar cliente:', error);
-      alert('Falha ao salvar cliente.');
+      console.error('Erro ao cadastrar cliente:', error);
+      alert('Falha ao cadastrar cliente. Veja o console.');
     }
   });
 }
