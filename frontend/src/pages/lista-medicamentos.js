@@ -1,4 +1,3 @@
-// frontend/src/pages/lista-medicamentos.js
 import { getMedications, deleteMedication } from '../api/ClientApi.js';
 
 export async function renderListaMedicamentos() {
@@ -44,6 +43,10 @@ export async function renderListaMedicamentos() {
   app.querySelector('.back-button').addEventListener('click', () =>
     window.dispatchEvent(new CustomEvent('navigate', { detail: 'home' }))
   );
+
+  function normalize(str) {
+    return str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : '';
+  }
 
   async function loadMedications() {
     try {
@@ -91,9 +94,9 @@ export async function renderListaMedicamentos() {
       renderList(medications);
 
       // ===== Eventos de deletar =====
-      container.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.dataset.id;
+      container.addEventListener('click', async (e) => {
+        if (e.target.closest('.delete-btn')) {
+          const id = e.target.closest('.delete-btn').dataset.id;
           if (!confirm("Deseja realmente deletar este medicamento?")) return;
           try {
             await deleteMedication(id);
@@ -103,26 +106,36 @@ export async function renderListaMedicamentos() {
             console.error("Erro ao deletar medicamento:", err);
             alert("Falha ao deletar medicamento.");
           }
-        });
-      });
+        }
 
-      // ===== Eventos de editar =====
-      container.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = btn.dataset.id;
+        if (e.target.closest('.edit-btn')) {
+          const id = e.target.closest('.edit-btn').dataset.id;
           window.dispatchEvent(new CustomEvent('navigate', { detail: { page: 'cadastro-medicamentos', id } }));
-        });
+        }
       });
 
-      // ===== Filtro simples =====
+      // ===== Busca com debounce e acento-insensitive =====
+      let searchTimeout;
       searchInput.addEventListener('input', () => {
-        const term = searchInput.value.toLowerCase();
-        const filtered = medications.filter(m =>
-          m.name.toLowerCase().includes(term) ||
-          m.active.toLowerCase().includes(term) ||
-          (m.batch || '').toLowerCase().includes(term)
-        );
-        renderList(filtered);
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          const term = normalize(searchInput.value);
+          const filtered = medications.filter(m =>
+            normalize(m.name).includes(term) ||
+            normalize(m.active).includes(term) ||
+            normalize(m.batch || '').includes(term)
+          );
+
+          if (filtered.length === 0) {
+            container.innerHTML = `
+              <div class="alert alert-info text-center" role="alert">
+                Nenhum medicamento encontrado.
+              </div>`;
+            totalEl.textContent = "Total de itens em estoque: 0";
+          } else {
+            renderList(filtered);
+          }
+        }, 200);
       });
 
     } catch (err) {

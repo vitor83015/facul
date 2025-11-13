@@ -1,4 +1,3 @@
-// src/pages/lista-clientes.js
 import { getClients, deleteClient } from '../api/ClientApi.js';
 import { renderCadastroClientes } from './cadastro-clientes.js'; // import para edição
 
@@ -48,6 +47,10 @@ export async function renderListaClientes() {
   const totalClientsEl = document.getElementById('total-clients');
   const searchInput = document.getElementById('searchClients');
 
+  function normalize(str) {
+    return str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : '';
+  }
+
   try {
     const clients = await getClients();
 
@@ -87,15 +90,27 @@ export async function renderListaClientes() {
 
     renderList(clients);
 
-    // === Eventos de filtro ===
+    // === Busca com debounce e acento-insensitive ===
+    let searchTimeout;
     searchInput.addEventListener('input', () => {
-      const term = searchInput.value.toLowerCase();
-      const filtered = clients.filter(
-        (c) =>
-          c.name.toLowerCase().includes(term) ||
-          c.cpf.toLowerCase().includes(term)
-      );
-      renderList(filtered);
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        const term = normalize(searchInput.value);
+        const filtered = clients.filter(c =>
+          normalize(c.name).includes(term) ||
+          normalize(c.cpf).includes(term)
+        );
+
+        if (filtered.length === 0) {
+          container.innerHTML = `
+            <div class="alert alert-info text-center" role="alert">
+              Nenhum cliente encontrado.
+            </div>`;
+          totalClientsEl.textContent = "Total de clientes: 0";
+        } else {
+          renderList(filtered);
+        }
+      }, 200);
     });
 
     // === Eventos de editar e deletar ===
